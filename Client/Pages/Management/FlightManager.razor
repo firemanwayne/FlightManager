@@ -1,0 +1,154 @@
+﻿@page "/Manager/Flights"
+@inject FlightHttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<App> _log
+@implements IAsyncDisposable
+
+<PageTitle>Flight Manager</PageTitle>
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card-header">
+            <div class="container px-0 mx-0">
+                <h3>Flight Manager: </h3>
+                <span>Last Updated @LastUpdated?.ToString("MM/dd/yyyy HH:mm:ss")</span>
+            </div>
+
+            @if (SelectedFlight != null)
+            {
+                <div class="container px-0 mx-0 pt-5">
+                    <div class="px-3" style="border:solid 1px black">
+                        <p>Selected Flight: </p>
+                        <p class="my-0">Flight Id: @SelectedFlight?.Id</p>
+                        <p class="my-0">Destination: @SelectedFlight?.Destination.FAAIdentifier</p>
+                        <p class="my-0">
+                            Update Flight Status:
+
+                            <div class="btn-group">
+                                <button type="button" class="btn @FlightStatus.Arrived" @onclick="(() => UpdateFlightStatus(FlightStatus.Arrived))">@FlightStatus.Arrived</button>
+                                <button type="button" class="btn @FlightStatus.Departing" @onclick="(() => UpdateFlightStatus(FlightStatus.Departing))">@FlightStatus.Departing</button>
+                                <button type="button" class="btn @FlightStatus.Loading" @onclick="(() => UpdateFlightStatus(FlightStatus.Loading))">@FlightStatus.Loading</button>
+                                <button type="button" class="btn @FlightStatus.UnLoading" @onclick="(() => UpdateFlightStatus(FlightStatus.UnLoading))">@FlightStatus.UnLoading</button>
+                                <button type="button" class="btn @FlightStatus.InBound" @onclick="(() => UpdateFlightStatus(FlightStatus.InBound))">@FlightStatus.InBound</button>
+                            </div>
+                        </p>
+                        <p class="my-0">                            
+                            <label class="form-label" for="delay">Delay Flight Amount (Minutes):</label>
+                            <input class="form-control" id="delay" type="number" placeholder="Delay Amount in Minutes" @bind-value="@DelayAmount"/>
+                            <button @onclick="DelayFlight" type="button" class="btn btn-outline-danger">Delay Flight</button>
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover border-5">
+                <thead>
+                    <tr>
+                        <th class="text-center">Departure</th>
+                        <th class="text-center">Destination</th>
+                        <th class="text-center">Departure</th>
+                        <th class="text-center">Arrival</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Passengers</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var f in flights)
+                    {
+                        <tr class="@f.FlightStatus">
+                            <td class="text-center border">@f.Departure.FAAIdentifier</td>
+                            <td class="text-center border">@f.Destination.FAAIdentifier</td>
+                            <td class="text-center border">@f.DepartureDate.ToString("MM/dd/yyyy HH:mm")</td>
+                            <td class="text-center border">@f.ArrivalDate.ToString("MM/dd/yyyy HH:mm")</td>
+                            <td class="text-center border">@f.FlightStatus</td>
+                            <td class="text-center border">@f.Passengers.Count()</td>
+                            <td class="text-center border">
+                                <button class="border-0 bg-transparent text-black" @onclick="(() => SelectFlight(f))" type="button">Select</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    HubConnection? Hub { get; set; }
+
+    string HubStatus
+    {
+        get
+        {
+            if (Hub != null)
+                return Hub.State.ToString();
+            else
+                return "Not Available";
+        }
+    }
+
+    double DelayAmount { get; set; } = 0;
+
+    DateTime? LastUpdated { get; set; }
+
+    Flight? SelectedFlight { get; set; }
+
+    IList<Flight> flights { get; set; } = new List<Flight>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Hub = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/flighthub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        await GetFlights();
+
+        await Hub.StartAsync();
+    }
+
+    void SelectFlight(Flight f) => SelectedFlight = f;
+
+    async void DelayFlight()
+    {
+        if (SelectedFlight != null && DelayAmount > 0)
+        {
+            await Http.DelayFlight(new(SelectedFlight.Id, DelayAmount));
+
+            await GetFlights();
+        }
+    }
+
+    async void UpdateFlightStatus(FlightStatus status)
+    {
+        if (SelectedFlight != null)
+        {
+            await Http.UpdateStatus(new(flightId: SelectedFlight.Id, status: status));
+
+            await GetFlights();
+        }
+    }
+
+    async Task GetFlights()
+    {
+        var f = await Http.GetFlights();
+
+        if (f != null)
+            flights = f
+            .OrderBy(a => a.DepartureDate)
+            .ToList();
+
+        LastUpdated = DateTime.Now;
+
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Hub is not null)
+            await Hub.DisposeAsync();
+    }
+}

@@ -1,0 +1,35 @@
+﻿.FirstClass {
+    border:solid black 1px;
+    background-color: orange;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px orange;
+}
+    .FirstClass:hover {
+        color: orange;
+        box-shadow: 0 0 5px orange;
+        text-shadow: 0 0 5px orange;
+    }
+
+.CoachPlus {
+    border: solid lightgray 1px;
+    background-color: Highlight;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px Highlight;
+}
+    .CoachPlus:hover {
+        color: Highlight;
+        box-shadow: 0 0 5px Highlight;
+        text-shadow: 0 0 5px Highlight;
+    }
+
+.Coach {
+    border: solid black 1px;
+    background-color: lightgray;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px lightgray;
+}
+    .Coach:hover {
+        color: #ffee10;
+        box-shadow: 0 0 5px lightgray;
+        text-shadow: 0 0 5px lightgray;
+    }

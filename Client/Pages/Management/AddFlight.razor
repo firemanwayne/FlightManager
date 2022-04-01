@@ -1,0 +1,70 @@
+﻿@page "/Manager/AddFlight"
+@inject FlightHttpClient Http
+@inject ILogger<AddFlight> _log
+
+<PageTitle>Create New Flight</PageTitle>
+
+<div class="container-fluid">
+
+    <EditForm Model="NewFlight" OnValidSubmit="ValidSubmitt">
+        <ValidationSummary />
+        <DataAnnotationsValidator />
+
+        <div class="mb-3 mt-3">
+            <label for="departure" class="form-label">Departure: </label>
+            <InputText Value="@NewFlight.Departure" class="form-control" id="departure" placeholder="Enter Departure City" name="departure" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.Departure)" />
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="destination" class="form-label">Destination: </label>
+            <InputText Value="@NewFlight.Destination" class="form-control" id="destination" placeholder="Enter Destination City" name="destination" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.Destination)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="firstClass" class="form-label">Available First Class Seats: </label>
+            <InputNumber Value="@NewFlight.AvailableFirstClassSeats" class="form-control" id="firstClass" placeholder="Enter Amount of Available First Class Seats" name="firstClass" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.AvailableFirstClassSeats)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="coachPlus" class="form-label">Available Coach Plus Seats: </label>
+            <InputNumber Value="@NewFlight.AvailableCoachPlusSeats" class="form-control" id="coachPlus" placeholder="Enter Amount of Available Coach Plus Seats" name="coachPlus" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.AvailableCoachPlusSeats)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="coach" class="form-label">Available Coach Seats: </label>
+            <InputNumber Value="@NewFlight.AvailableCoachSeats" class="form-control" id="coach" placeholder="Enter Amount of Available Coach Seats" name="coach" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.AvailableCoachSeats)" />
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="departure" class="form-label">Departure: </label>
+            <InputDate Value="@NewFlight.DepartureDate" class="form-control" id="departure" placeholder="Enter Departure Date" name="departure" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.DepartureDate)" />
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="duration" class="form-label">Flight Duration: </label>
+            <InputNumber Value="@NewFlight.FlightDuration" class="form-control" id="duration" placeholder="Enter Flight Duration" name="duration" />
+            <ValidationMessage class="text-danger" For="(() => NewFlight.FlightDuration)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+
+</div>
+
+
+@code {
+    CreateFlightCommand NewFlight { get; set; } = new();
+
+    async void ValidSubmitt()
+    {
+        await Http.AddFlight(NewFlight);
+
+        NewFlight = new();
+    }
+}

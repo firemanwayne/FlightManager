@@ -1,0 +1,170 @@
+﻿@inject FlightHttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<App> _log
+@implements IAsyncDisposable
+
+<div>
+    <h3>Airport Dashboard</h3>
+    <div>
+        @HubStatus
+    </div>
+    <div>
+        @LastUpdated?.ToString("MM/dd/yyyy HH:mm:ss")
+    </div>
+</div>
+
+<div id="accordion">    
+
+    <div class="card @FlightStatus.Loading">
+        <div class="card-header text-white">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseOne">
+                @FlightStatus.Loading (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.Loading)).Count())
+            </a>
+        </div>
+        <div id="collapseOne" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.Loading" OnViewFlightDetails="@ViewFlightDetails">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+    <div class="card @FlightStatus.UnLoading">
+        <div class="card-header text-white">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseTwo">
+                @FlightStatus.UnLoading (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.UnLoading)).Count())
+            </a>
+        </div>
+        <div id="collapseTwo" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.UnLoading" OnViewFlightDetails="@ViewFlightDetails">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+    <div class="card @FlightStatus.Departing">
+        <div class="card-header text-white">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseThree">
+                @FlightStatus.Departing (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.Departing)).Count())
+            </a>
+        </div>
+        <div id="collapseThree" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.Departing" OnViewFlightDetails="@ViewFlightDetails">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+    <div class="card @FlightStatus.InBound">
+        <div class="card-header text-white">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseFour">
+                @FlightStatus.InBound (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.InBound)).Count())
+            </a>
+        </div>
+        <div id="collapseFour" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.InBound" OnViewFlightDetails="@ViewFlightDetails">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+    <div class="card @FlightStatus.Arrived">
+        <div class="card-header">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseFive">
+                @FlightStatus.Arrived (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.Arrived)).Count())
+            </a>
+        </div>
+        <div id="collapseFive" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.Arrived" OnViewFlightDetails="@ViewFlightDetails">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+     <div class="card @FlightStatus.Delayed">
+        <div class="card-header">
+            <a class="collapsed btn text-white" data-bs-toggle="collapse" href="#collapseSix">
+                @FlightStatus.Delayed (@Flights.Where(s => s.FlightStatus.Equals(FlightStatus.Delayed)).Count())
+            </a>
+        </div>
+        <div id="collapseSix" class="collapse" data-bs-parent="#accordion">
+            <div class="card-body">
+                <FlightTable Flights="Flights" Status="FlightStatus.Delayed">
+
+                </FlightTable>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    HubConnection? Hub { get; set; }
+
+    string HubStatus
+    {
+        get
+        {
+            if (Hub != null)
+                return Hub.State.ToString();
+            else
+                return "Not Available";
+        }
+    }
+
+    DateTime? LastUpdated { get; set; }
+
+    IList<Flight> Flights { get; set; } = new List<Flight>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Hub = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/flighthub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        await UpdateFlights();                
+
+        if (Hub != null)
+        {
+            Hub.On("Update", async () =>
+            {
+                await UpdateFlights();
+            });
+            await Hub.StartAsync();
+        }
+    }
+
+    void ViewFlightDetails(Flight f)
+    {
+        Navigation.NavigateTo("/FlightDetails/" + f.Id);
+    }
+
+    async Task UpdateFlights()
+    {
+        var flights = await Http.GetFlights();
+
+        if (flights != null)
+            Flights = flights.ToList();
+
+        LastUpdated = DateTime.Now;
+
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Hub is not null)
+            await Hub.DisposeAsync();
+    }
+}

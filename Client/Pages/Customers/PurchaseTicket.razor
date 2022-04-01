@@ -1,0 +1,161 @@
+﻿@page "/Customers/Purchase"
+@inject FlightHttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<App> _log
+@implements IAsyncDisposable
+
+<PageTitle>Ticket Purchase</PageTitle>
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card-header">
+            <div class="container px-0 mx-0">
+                <h3>Flight Manager: </h3>
+                <span>Last Updated @LastUpdated?.ToString("MM/dd/yyyy HH:mm:ss")</span>
+            </div>
+            <div class="container px-0 mx-0 pt-5">
+                <div class="px-3" style="border:solid 1px black">
+                    <p class="my-0">
+                        <label class="form-label" for="depart">Departure</label>
+                        <select class="form-control" id="depart" @bind-value="@SearchDeparture" @bind-value:event="onchange">
+                            <option value="@string.Empty">Select Airport</option>
+                            @foreach(var a in Airports.GetUsAirports.OrderBy(a => a.FAAIdentifier))
+                            {
+                                <option value="@a.FAAIdentifier">@a.FAAIdentifier (@a.Name)</option>
+                            }
+                        </select>                        
+                    </p>
+                    <p class="my-0">
+                        <label class="form-label" for="destination">Destination</label>
+                        <select class="form-control" id="destination" @bind-value="@SearchDestination" @bind-value:event="onchange">
+                            <option value="@string.Empty">Select Airport</option>
+                            @foreach(var a in Airports.GetUsAirports.OrderBy(a => a.FAAIdentifier))
+                            {
+                                <option value="@a.FAAIdentifier">@a.FAAIdentifier (@a.Name)</option>
+                            }
+                        </select>                        
+                    </p>
+
+                    <p class="my-0">
+                        <label class="form-label" for="departDate">Departure Date</label>
+                        <input class="form-control" id="departDate" type="date" placeholder="Enter Date of Departure" @bind-value="@SearchDepartureDate" />                        
+                    </p>
+
+                    <p class="my-2">
+                        <div class="btn-group">
+                            <button @onclick="Search" type="button" class="btn btn-outline-danger">Search</button>
+                            <button @onclick="Reset" type="button" class="btn btn-outline-primary">Reset</button>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (flights != null && flights.Count() > 0)
+            {
+                <table class="table table-bordered table-hover border-5">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Departure</th>
+                            <th class="text-center">Destination</th>
+                            <th class="text-center">Departure Date</th>
+                            <th class="text-center">Arrival Date</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var f in flights)
+                        {
+                            <tr class="@f.FlightStatus">
+                                <td class="text-center border">@f.Departure.FAAIdentifier</td>
+                                <td class="text-center border">@f.Destination.FAAIdentifier</td>
+                                <td class="text-center border">@f.DepartureDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td class="text-center border">@f.ArrivalDate.ToString("MM/dd/yyyy HH:mm")</td>                             
+                                <td class="text-center border">
+                                    <button class="border-0 bg-transparent text-black" @onclick="(() => SelectFlight(f))" type="button">Select</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <text>No Available Flights</text>
+            }
+        </div>
+        <div class="card-footer">
+            @if (SelectedFlight != null)
+            {
+                <SeatingChart Flight="SelectedFlight"/>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    bool ShowSpinner{ get; set; }
+
+    [EditorRequired] string SearchDeparture { get; set; } = "";
+
+    [EditorRequired] string SearchDestination { get; set; } = "";
+
+    DateOnly SearchDepartureDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+    HubConnection? Hub { get; set; }
+
+    DateTime? LastUpdated { get; set; }
+
+    Flight? SelectedFlight { get; set; }
+
+    IList<Flight> flights { get; set; } = new List<Flight>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Hub = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/flighthub"))
+            .WithAutomaticReconnect()
+            .Build();        
+
+        await Hub.StartAsync();
+    }
+
+    void SelectFlight(Flight f) => SelectedFlight = f;
+
+    async Task GetFlights()
+    {
+        var f = await Http.GetFlights();
+
+        if (f != null)
+            flights = f
+            .Where(a => a.FlightStatus.Equals(FlightStatus.InQueue)
+            && a.Departure.Id.Equals(SearchDeparture)
+            && a.Destination.Id.Equals(SearchDestination)
+            && a.DepartureDate.Month.Equals(SearchDepartureDate.Month)
+            && a.DepartureDate.Day.Equals(SearchDepartureDate.Day)
+            && a.DepartureDate.Year.Equals(SearchDepartureDate.Year))
+            .ToList();
+
+        LastUpdated = DateTime.Now;
+
+        StateHasChanged();
+    }
+
+    async void Search()
+    {
+        await GetFlights();
+    }
+    void Reset()
+    {
+        SearchDeparture = string.Empty;
+        SearchDestination = string.Empty;
+        SearchDepartureDate = default;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Hub is not null)
+            await Hub.DisposeAsync();
+    }
+}

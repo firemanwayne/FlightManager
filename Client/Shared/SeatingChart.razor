@@ -1,0 +1,60 @@
+﻿
+@if (Flight != null)
+{
+    <div class="container">
+
+        <div class="container">
+            <p>Destination: @Flight?.Destination.FAAIdentifier</p>
+            <p>Departure: @Flight?.DepartureDate.ToString("MM/dd/yyyy HH:mm")</p>
+            <p>Arrival: @Flight?.ArrivalDate.ToString("MM/dd/yyyy HH:mm")</p>
+
+            @if (ViewAvailableSeats)
+            {
+                <p>First Class Seats Available: @Flight?.AvailableFirstClassSeats</p>
+                <p>Coach Plus Seats Available: @Flight?.AvailableCoachPlusSeats</p>
+                <p>Coach Seats Available: @Flight?.AvailableCoachSeats</p>
+            }
+            @if (ViewStatus)
+            {
+                <p>Status: @Flight?.FlightStatus</p>
+            }
+        </div>
+
+        <div class="container" style="overflow-y:scroll;max-height:300px;">
+
+            @if (Flight != null)
+            {
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Flight</th>
+                            <th class="text-center">Seat Number</th>
+                            <th class="text-center">Price</th>
+                            <th class="text-center">Seat Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var seat in Flight.AvailableTickets)
+                        {
+                            <tr>
+                                <td class="text-center">@seat.FlightId</td>
+                                <td class="text-center">@seat.RowNumber @seat.SeatNumber</td>
+                                <td class="text-center">@seat.Price.ToString("c")</td>
+                                <td class="text-center">@seat.SeatType</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Flight? Flight { get; set; }
+
+    [Parameter] public bool ViewStatus{ get; set; }
+
+    [Parameter] public bool ViewAvailableSeats { get; set; }
+}
