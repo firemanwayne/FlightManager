@@ -35,12 +35,7 @@
                                 <option value="@a.FAAIdentifier">@a.FAAIdentifier (@a.Name)</option>
                             }
                         </select>                        
-                    </p>
-
-                    <p class="my-0">
-                        <label class="form-label" for="departDate">Departure Date</label>
-                        <input class="form-control" id="departDate" type="date" placeholder="Enter Date of Departure" @bind-value="@SearchDepartureDate" />                        
-                    </p>
+                    </p>                                     
 
                     <p class="my-2">
                         <div class="btn-group">
@@ -95,13 +90,11 @@
 </div>
 
 @code {
-    bool ShowSpinner{ get; set; }
+    bool ShowSpinner { get; set; }
 
     [EditorRequired] string SearchDeparture { get; set; } = "";
 
     [EditorRequired] string SearchDestination { get; set; } = "";
-
-    DateOnly SearchDepartureDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     HubConnection? Hub { get; set; }
 
@@ -125,16 +118,13 @@
 
     async Task GetFlights()
     {
-        var f = await Http.GetFlights();
+        var locatedFlights = await Http.GetFlights();
 
-        if (f != null)
-            flights = f
+        if (locatedFlights != null)
+            flights = locatedFlights
             .Where(a => a.FlightStatus.Equals(FlightStatus.InQueue)
             && a.Departure.Id.Equals(SearchDeparture)
-            && a.Destination.Id.Equals(SearchDestination)
-            && a.DepartureDate.Month.Equals(SearchDepartureDate.Month)
-            && a.DepartureDate.Day.Equals(SearchDepartureDate.Day)
-            && a.DepartureDate.Year.Equals(SearchDepartureDate.Year))
+            && a.Destination.Id.Equals(SearchDestination))
             .ToList();
 
         LastUpdated = DateTime.Now;
@@ -150,7 +140,6 @@
     {
         SearchDeparture = string.Empty;
         SearchDestination = string.Empty;
-        SearchDepartureDate = default;
     }
 
     public async ValueTask DisposeAsync()

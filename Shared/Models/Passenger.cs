@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Events.Shared
+namespace AirportManager.Shared
 {
     public class Passenger : AirportBaseModel
     {

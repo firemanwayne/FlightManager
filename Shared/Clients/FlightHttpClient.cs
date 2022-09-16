@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 
-namespace Events.Shared
+namespace AirportManager.Shared
 {
     public class FlightHttpClient
     {

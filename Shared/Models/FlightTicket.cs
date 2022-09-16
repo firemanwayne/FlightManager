@@ -1,4 +1,4 @@
-﻿namespace Events.Shared
+﻿namespace AirportManager.Shared
 {
     public class FlightTicket : AirportBaseModel
     {

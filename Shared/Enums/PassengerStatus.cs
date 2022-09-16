@@ -1,4 +1,4 @@
-﻿namespace Events.Shared
+﻿namespace AirportManager.Shared
 {
     public enum PassengerStatus { NotCheckedIn, CheckedIn }
 }

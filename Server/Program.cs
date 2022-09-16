@@ -1,10 +1,10 @@
-using Events.Server.Hubs;
-using Events.Shared;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Events.Server.Data;
+using AirportManager.Shared;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using Web.Server.Data;
+using Web.Server.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
         options.EnableRetryOnFailure();        
     })
     .EnableSensitiveDataLogging()
-    .EnableDetailedErrors();
-    
+    .EnableDetailedErrors();    
 });
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

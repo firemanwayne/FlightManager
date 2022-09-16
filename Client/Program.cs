@@ -1,5 +1,5 @@
-using Events.Client;
-using Events.Shared;
+using Web.Client;
+using AirportManager.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -14,7 +14,7 @@ builder.Services
     .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddHttpClient<FlightHttpClient>(c => c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
-builder.Services.AddHttpClient("Events.Server.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+builder.Services.AddHttpClient("Web.Server.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
     .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
 builder.Services.AddSingleton<HubConnection>(sp =>

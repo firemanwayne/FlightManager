@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace Events.Server.Areas.Identity.Pages.Account
+namespace Web.Server.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {

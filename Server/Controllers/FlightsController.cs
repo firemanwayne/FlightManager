@@ -1,9 +1,9 @@
-﻿using Events.Server.Hubs;
-using Events.Shared;
+﻿using Web.Server.Hubs;
+using AirportManager.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Events.Server.Controllers
+namespace Web.Server.Controllers
 {
     [ApiController]
     [Route("api/{controller}/{action?}")]
@@ -30,7 +30,8 @@ namespace Events.Server.Controllers
         [ActionName("get")]
         public Flight GetSingle(string id)
         {
-            var flight = _service.GetFlights(a => a.Id.Equals(id)).FirstOrDefault();
+            var flight = _service.GetFlights(a => a.Id.Equals(id))
+                .FirstOrDefault();
 
             if (flight != null)
                 return flight;

@@ -31,6 +31,7 @@
                             <th class="text-center">Seat Number</th>
                             <th class="text-center">Price</th>
                             <th class="text-center">Seat Type</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,6 +42,9 @@
                                 <td class="text-center">@seat.RowNumber @seat.SeatNumber</td>
                                 <td class="text-center">@seat.Price.ToString("c")</td>
                                 <td class="text-center">@seat.SeatType</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-danger">Add to Cart</button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -57,4 +61,14 @@
     [Parameter] public bool ViewStatus{ get; set; }
 
     [Parameter] public bool ViewAvailableSeats { get; set; }
+
+    [Parameter] public EventCallback<FlightTicket> OnAddToCart { get; set; }
+
+    [Parameter] public EventCallback<FlightTicket> OnRemoveFromCart { get; set; }
+
+    async Task HandleAddToCart(FlightTicket ticket)
+    {
+        if (OnAddToCart.HasDelegate)
+            await OnAddToCart.InvokeAsync(ticket);
+    }
 }

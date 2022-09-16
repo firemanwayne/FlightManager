@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Events.Shared
+namespace AirportManager.Shared
 {
     public class Airport : AirportBaseModel
     {

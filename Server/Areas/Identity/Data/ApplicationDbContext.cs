@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Events.Server.Data;
+namespace Web.Server.Data;
 
 public class ApplicationDbContext : ApiAuthorizationDbContext<IdentityUser>
 {

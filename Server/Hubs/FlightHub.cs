@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Events.Server.Hubs
+namespace Web.Server.Hubs
 {
     public class FlightHub : Hub
     {             

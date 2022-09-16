@@ -1,5 +1,5 @@
 ﻿using Desktop.Shared;
-using Events.Shared;
+using AirportManager.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -29,7 +29,7 @@ namespace Desktop
 
             var services = new ServiceCollection();
             ConfigureServices(services);
-            provider = services.BuildServiceProvider();
+            provider = services.BuildServiceProvider();           
 
             var mainWindow = provider.GetRequiredService<MainWindow>();
 
@@ -40,6 +40,8 @@ namespace Desktop
         void ConfigureServices(IServiceCollection services)
         {
             services.AddBlazorWebView();
+
+            services.AddWpfBlazorWebView();
 
             services.AddSingleton(sp =>
             {

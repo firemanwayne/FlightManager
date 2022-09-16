@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
-namespace Events.Server.Areas.Identity.Pages.Account
+namespace Web.Server.Areas.Identity.Pages.Account
 {
     public class LoginWith2faModel : PageModel
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Events.Shared
+namespace AirportManager.Shared
 {
     public interface ICommand
     {        
