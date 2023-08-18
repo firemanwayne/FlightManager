@@ -1,0 +1,36 @@
+﻿@page "/flights/details/{FlightId}"
+@inject FlightHttpClient _client
+
+<div class="container-fluid">
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3>Details for Flight: @FlightId</h3>
+            </div>
+
+            <div class="card-body">
+                <SeatingChartPlaneView Flight="flight" />               
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string? FlightId { get; set; }
+
+    Flight? flight { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(FlightId))
+        {
+            var f = await _client.GetFlight(FlightId);
+
+            if (f != null)
+                flight = f;
+        }
+    }
+}

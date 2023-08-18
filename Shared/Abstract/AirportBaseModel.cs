@@ -1,4 +1,6 @@
-﻿namespace AirportManager.Shared
+﻿using System.Text.Json.Serialization;
+
+namespace AirportManagement.Shared
 {
     public abstract class AirportBaseModel
     {
@@ -12,6 +14,7 @@
             Id = id;
         }
 
+        [JsonPropertyName("id")]
         public string Id { get; set; }
     }
 }

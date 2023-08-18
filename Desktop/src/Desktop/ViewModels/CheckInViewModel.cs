@@ -1,7 +1,6 @@
 ﻿using Desktop.Pages;
 using Desktop.Shared;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Desktop.ViewModels
 {

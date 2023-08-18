@@ -25,8 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Client\Web.Client.csproj" />
-		<ProjectReference Include="..\Shared\AirportManager.Shared.csproj" />
+		<ProjectReference Include="..\Blazor.Wasm\Blazor.Wasm.csproj" />
+		<ProjectReference Include="..\Domain\Domain.csproj" />
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
 
 

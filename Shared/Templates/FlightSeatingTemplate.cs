@@ -1,4 +1,4 @@
-﻿namespace AirportManager.Shared
+﻿namespace AirportManagement.Shared
 {
     public class FlightSeatingTemplate
     {

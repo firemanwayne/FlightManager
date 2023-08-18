@@ -1,7 +1,8 @@
 ﻿using Web.Server.Hubs;
-using AirportManager.Shared;
+using AirportManagement.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using AirportManagement.Domain;
 
 namespace Web.Server.Controllers
 {
@@ -10,10 +11,10 @@ namespace Web.Server.Controllers
     public class FlightsController : ControllerBase
     {        
         readonly IHubContext<FlightHub> _ctx;
-        readonly IAirportManagerService _service;
+        readonly IFlightManager _service;
 
         public FlightsController(
-            IAirportManagerService _service,
+            IFlightManager _service,
             IHubContext<FlightHub> _ctx) : base()
         {            
             this._ctx = _ctx;
@@ -41,7 +42,7 @@ namespace Web.Server.Controllers
 
         [HttpPost]
         [ActionName("add")]
-        public async void Add([FromBody] CreateFlightCommand cmd)
+        public async void Add([FromBody] CreateFlight cmd)
         {
             _service.Handle(cmd);
 
@@ -50,7 +51,7 @@ namespace Web.Server.Controllers
 
         [HttpPost]
         [ActionName("update")]
-        public async void Update([FromBody] UpdateFlightStatusCommand cmd)
+        public async void Update([FromBody] UpdateFlightStatus cmd)
         {
             _service.Handle(cmd);
 
@@ -59,7 +60,7 @@ namespace Web.Server.Controllers
 
         [HttpPost]
         [ActionName("delay")]
-        public async void Delay([FromBody] DelayFlightCommand cmd)
+        public async void Delay([FromBody] DelayFlight cmd)
         {
             _service.Handle(cmd);
 
@@ -68,7 +69,7 @@ namespace Web.Server.Controllers
 
         [HttpPost]
         [ActionName("delete")]
-        public async void Delete([FromBody] DeleteFlightCommand cmd)
+        public async void Delete([FromBody] DeleteFlight cmd)
         {
             _service.Handle(cmd);
 

@@ -3,8 +3,7 @@
     public class FlightMonitorService : BackgroundService
     {
         public FlightMonitorService()
-        {
-        }
+        { }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {

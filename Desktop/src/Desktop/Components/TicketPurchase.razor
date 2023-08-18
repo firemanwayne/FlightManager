@@ -1,4 +1,5 @@
-﻿
+﻿@namespace Desktop.Components
+
 @inject IServiceProvider _sp
 @inject ILogger<App> _log
 @implements IAsyncDisposable
@@ -86,8 +87,7 @@
         </div>
         <div class="card-footer">
             @if (SelectedFlight != null)
-            {
-                <SeatingChart Flight="SelectedFlight"/>
+            {               
             }
         </div>
     </div>

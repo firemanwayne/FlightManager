@@ -1,0 +1,88 @@
+﻿@if (Flights.Count() == 0)
+{
+    <tr class="@Status">
+        No Available Flight Information
+    </tr>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th class="text-center" @onclick="@OrderByDestination">Destination</th>
+                <th class="text-center" @onclick="OrderByDeparture">Departure</th>
+                <th class="text-center" @onclick="OrderByArrival">Arrival</th>
+                <th class="text-center" @onclick="OrderByStatus">Status</th>
+                <th class="text-center">
+                    View Details
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Flight f in Flights)
+            {
+                <tr>
+                    <td class="text-center border">@f.Destination?.FAAIdentifier</td>
+                    <td class="text-center border">@f.DepartureDate.ToString("MM/dd/yyyy HH:mm")</td>
+                    <td class="text-center border">@f.ArrivalDate.ToString("MM/dd/yyyy HH:mm")</td>
+                    <td class="text-center border">@f.FlightStatus</td>
+                    <td class="text-center border">
+                        <button class="btn btn-light" @onclick="@(() => ViewDetails(f))">Details</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    [Parameter] public EventCallback<Flight> OnViewFlightDetails{ get; set; }
+
+    [Parameter] public EventCallback<Flight>? OnFlightSelected { get; set; }
+
+    [Parameter] public FlightStatus Status { get; set; } = FlightStatus.InQueue;
+
+    [Parameter] public IEnumerable<Flight> Flights { get; set; } = Enumerable.Empty<Flight>();
+
+    protected override Task OnParametersSetAsync()
+    {
+        Flights = Flights
+        .Where(f => f.FlightStatus.Equals(Status))
+        .AsEnumerable();
+
+        return Task.CompletedTask;
+    }
+
+    void ViewDetails(Flight f)
+    {
+        if (OnViewFlightDetails.HasDelegate)
+            OnViewFlightDetails.InvokeAsync(f);
+    }
+
+    void OrderByDestination()
+    {
+        Flights = Flights
+        .Where(f => f.FlightStatus.Equals(Status))
+        .OrderBy(a => a.Destination.FAAIdentifier);
+    }
+
+    void OrderByDeparture()
+    {
+        Flights = Flights
+        .Where(f => f.FlightStatus.Equals(Status))
+        .OrderBy(a => a.DepartureDate);
+    }
+    void OrderByArrival()
+    {
+        Flights = Flights
+        .Where(f => f.FlightStatus.Equals(Status))
+        .OrderBy(a => a.ArrivalDate);
+    }
+    void OrderByStatus()
+    {
+        Flights = Flights
+        .Where(f => f.FlightStatus.Equals(Status))
+        .OrderBy(a => a.FlightStatus);
+    }
+}

@@ -1,4 +1,6 @@
-﻿@inject IServiceProvider _sp
+﻿@namespace Desktop.Components
+
+@inject IServiceProvider _sp
 @inject ILogger<App> _log
 @implements IAsyncDisposable
 
@@ -122,9 +124,9 @@
         }
     }
 
-    DateTime? LastUpdated { get; set; }
+    DateTime? LastUpdated;
 
-    IList<Flight> Flights { get; set; } = new List<Flight>();
+    IList<Flight> Flights = new List<Flight>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,11 +159,14 @@
         var flights = await Http.GetFlights();
 
         if (flights != null)
-            Flights = flights.ToList();
+        {
+            Flights.Clear();
 
+            Flights = flights.ToList();
+        }
         LastUpdated = DateTime.Now;
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     public async ValueTask DisposeAsync()

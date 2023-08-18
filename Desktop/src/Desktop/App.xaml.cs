@@ -1,5 +1,5 @@
 ﻿using Desktop.Shared;
-using AirportManager.Shared;
+using AirportManagement.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using Desktop.Clients;
 
 namespace Desktop
 {

@@ -1,4 +1,4 @@
-using AirportManager.Shared;
+using Infrastructure.Contexts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -38,11 +38,10 @@ builder.Services.AddIdentityServer()
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
 
-builder.Services.AddSingleton<IAirportManagerService, AirportManagerService>();
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .Services.AddInfrastructure();
 
 builder.Services.AddResponseCompression(opts =>
 {
@@ -58,9 +57,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
-
-    var _manager = app.Services.GetRequiredService<IAirportManagerService>();
-    _manager.SeedData();
+    
+    AirportDataContext.SeedData();
 }
 else
 {
